@@ -14,13 +14,14 @@ int status = WL_IDLE_STATUS;
 
 WiFiSSLClient client;
 
-char server[] = "marder.bieda.it";
+char server[] = SERVER;
 unsigned long lastConnectionTime = 0;
-const unsigned long postingInterval = 10L * 1000L;
+const unsigned long postingInterval = 10L * 60L * 1000L;
 
 void setup() {
 
-  carrier.noCase();
+  carrier.withCase();
+  //carrier.noCase();
   carrier.begin();
 
   Serial.begin(9600);
@@ -44,6 +45,7 @@ void setup() {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
     status = WiFi.begin(ssid, pass);
+    WiFi.lowPowerMode();
     delay(10000);
   }
 
@@ -73,6 +75,8 @@ void httpRequest() {
   doc["pressure"] = carrier.Pressure.readPressure(MILLIBAR);
 
   if (client.connect(server, 443)) {
+    Serial.print("\n");
+    Serial.print("\n");
     Serial.println("connecting...");
     Serial.println("POST /dhtData?api_key=1qazxsw23 HTTP/1.1");
     client.println("POST /dhtData?api_key=1qazxsw23 HTTP/1.1");
@@ -88,6 +92,8 @@ void httpRequest() {
     serializeJson(doc, Serial);
     serializeJson(doc, client);
     client.println();
+    Serial.print("\n");
+    Serial.print("\n");
     lastConnectionTime = millis();
 
   } else {
