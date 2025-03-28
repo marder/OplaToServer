@@ -3,8 +3,12 @@
 #include "ArduinoJson.h"
 #include "arduino_secrets.h"
 
-#include <Arduino_MKRIoTCarrier.h>
-MKRIoTCarrier carrier;
+// #include <Arduino_MKRIoTCarrier.h>
+// MKRIoTCarrier carrier;
+
+#include "Seeed_BME280.h"
+#include <Wire.h>
+BME280 bme280;
 
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
@@ -16,17 +20,21 @@ WiFiSSLClient client;
 
 char server[] = SERVER;
 unsigned long lastConnectionTime = 0;
-const unsigned long postingInterval = 10L * 60L * 1000L;
+const unsigned long postingInterval = 15L * 60L * 1000L;
 
 void setup() {
 
-  carrier.withCase();
+  //carrier.withCase();
   //carrier.noCase();
-  carrier.begin();
+  //carrier.begin();
 
   Serial.begin(9600);
   while (!Serial) {
     ;
+  }
+
+  if(!bme280.init()){
+    Serial.println("BME280 error!");
   }
 
   if (WiFi.status() == WL_NO_MODULE) {
@@ -70,9 +78,9 @@ void httpRequest() {
 
   JsonDocument doc;
   doc["description"] = "arduino-opla";
-  doc["temperature"] = carrier.Env.readTemperature();
-  doc["humidity"] = carrier.Env.readHumidity();
-  doc["pressure"] = carrier.Pressure.readPressure(MILLIBAR);
+  doc["temperature"] = bme280.getTemperature();
+  doc["humidity"] = bme280.getHumidity();
+  doc["pressure"] = bme280.getPressure() * 0.01;
 
   if (client.connect(server, 443)) {
     Serial.print("\n");
