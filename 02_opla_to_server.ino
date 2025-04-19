@@ -20,7 +20,7 @@ WiFiSSLClient client;
 
 char server[] = SERVER;
 unsigned long lastConnectionTime = 0;
-const unsigned long postingInterval = 15L * 60L * 1000L;
+const unsigned long postingInterval = 30L * 60L * 1000L;
 
 void setup() {
 
@@ -50,7 +50,7 @@ void setup() {
   }
 
   while (status != WL_CONNECTED) {
-    Serial.print("Attempting to connect to SSID: ");
+    Serial.print("\nAttempting to connect to SSID: ");
     Serial.println(ssid);
     status = WiFi.begin(ssid, pass);
     WiFi.lowPowerMode();
@@ -80,14 +80,14 @@ void httpRequest() {
   doc["description"] = "arduino-opla";
   doc["temperature"] = bme280.getTemperature();
   doc["humidity"] = bme280.getHumidity();
-  doc["pressure"] = bme280.getPressure() * 0.01;
+  doc["pressure"] = bme280.getPressure() * 0.01 + 14.5;
 
   if (client.connect(server, 443)) {
     Serial.print("\n");
     Serial.print("\n");
     Serial.println("connecting...");
-    Serial.println("POST /dhtData?api_key=1qazxsw23 HTTP/1.1");
-    client.println("POST /dhtData?api_key=1qazxsw23 HTTP/1.1");
+    Serial.println("POST /api/data?api_key=1qazxsw23 HTTP/1.1");
+    client.println("POST /api/data?api_key=1qazxsw23 HTTP/1.1");
     Serial.println("content-type: application/json");
     client.println("content-type: application/json");
     Serial.println("Host: marder.bieda.it");
