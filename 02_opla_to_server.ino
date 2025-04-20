@@ -13,6 +13,7 @@ BME280 bme280;
 char ssid[] = SECRET_SSID;
 char pass[] = SECRET_PASS;
 int keyIndex = 0;
+char buffer[40];
 
 int status = WL_IDLE_STATUS;
 
@@ -33,7 +34,7 @@ void setup() {
     ;
   }
 
-  if(!bme280.init()){
+  if (!bme280.init()) {
     Serial.println("BME280 error!");
   }
 
@@ -86,12 +87,18 @@ void httpRequest() {
     Serial.print("\n");
     Serial.print("\n");
     Serial.println("connecting...");
-    Serial.println("POST /api/data?api_key=1qazxsw23 HTTP/1.1");
-    client.println("POST /api/data?api_key=1qazxsw23 HTTP/1.1");
+    Serial.print("POST /api/data?api_key=");
+    Serial.print(API_KEY);
+    Serial.println(" HTTP/1.1");
+    client.print("POST /api/data?api_key=");
+    client.print(API_KEY);
+    client.println(" HTTP/1.1");
     Serial.println("content-type: application/json");
     client.println("content-type: application/json");
-    Serial.println("Host: marder.bieda.it");
-    client.println("Host: marder.bieda.it");
+    Serial.print("Host: ");
+    Serial.println(SERVER);
+    client.print("Host: ");
+    client.println(SERVER);
     Serial.print("content-length: ");
     client.print("content-length: ");
     Serial.println(measureJson(doc));
